@@ -7,7 +7,7 @@ import { profile } from '../data'
 const DEEP = [[0, [1, 2, 7]], [0.3, [3, 6, 24]], [0.55, [6, 17, 90]], [0.78, [0, 47, 225]], [1, [44, 84, 255]]]
 const LIGHT = [[0, [28, 72, 255]], [0.3, [84, 128, 255]], [0.55, [146, 176, 255]], [0.78, [204, 218, 255]], [1, [246, 249, 255]]]
 const GROUND = [239, 239, 239]
-const DURATION = 5200
+const DURATION = 2200
 
 const smooth = (t) => t * t * (3 - 2 * t)
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
@@ -119,7 +119,7 @@ export default function Loader() {
   useEffect(() => {
     if (state !== 'exit') return
     document.documentElement.classList.remove('is-loading')
-    const id = setTimeout(() => setState('gone'), 1400)
+    const id = setTimeout(() => setState('gone'), 800)
     return () => clearTimeout(id)
   }, [state])
 

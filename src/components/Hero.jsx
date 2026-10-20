@@ -362,10 +362,10 @@ function createStoryboard({ root, stage, reduced, onPhase }) {
       void stage.offsetWidth
       stage.classList.add('is-on')
       skyLift(0, true)
-      after(1300, () => ((shown = 0), showScene(0), unskeleton()))
-      after(1700, () => typeDocName(story.documents[0]))
-      after(2500, () => k.dark.classList.add('in'))
-      after(3100, () =>
+      after(650, () => ((shown = 0), showScene(0), unskeleton()))
+      after(950, () => typeDocName(story.documents[0]))
+      after(1500, () => k.dark.classList.add('in'))
+      after(1950, () =>
         log(story.boot, 110)
           .then(() => (stage.classList.add('is-xl'), sleep(500)))
           .then(() => acts[0]())
@@ -499,12 +499,12 @@ export default function Hero() {
         <h1 className="hero__title">
           {profile.headline.map((l, i) => (
             <span className="line" key={i}>
-              <span style={{ '--d': `${0.3 + i * 0.28}s` }}>{l}</span>
+              <span style={{ '--d': `${0.15 + i * 0.12}s` }}>{l}</span>
             </span>
           ))}
         </h1>
-        <p className="hero__sub blur-in" style={{ '--d': '.95s' }}>{profile.intro}</p>
-        <div className="hero__ctas blur-in" style={{ '--d': '1.25s' }}>
+        <p className="hero__sub blur-in" style={{ '--d': '.45s' }}>{profile.intro}</p>
+        <div className="hero__ctas blur-in" style={{ '--d': '.6s' }}>
           <a className="btn btn--blue" href={profile.resume} download>
             Download Resume <Icon name="download" size={18} />
           </a>
@@ -512,7 +512,7 @@ export default function Hero() {
             Let’s connect <Icon name="arrow" size={18} />
           </a>
         </div>
-        <p className="hero__tag blur-in" style={{ '--d': '1.55s' }}>
+        <p className="hero__tag blur-in" style={{ '--d': '.75s' }}>
           {profile.tagline.map((t, i) => (
             <span key={t}>
               {i > 0 && <i>·</i>}

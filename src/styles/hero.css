@@ -35,7 +35,7 @@
   color: var(--blue);
 }
 .is-ready .hero__title .line > span {
-  animation: eRise 1.7s var(--ease-soft) var(--d) both;
+  animation: eRise 1.1s var(--ease-soft) var(--d) both;
 }
 .hero__sub {
   font-size: clamp(16px, 1.5vw, 20px);
@@ -99,7 +99,7 @@
   transform: translateY(26px) scale(0.986);
 }
 .stage.is-on .stage__card-wrap {
-  animation: stageIn 1.5s var(--ease-out) 1s both;
+  animation: stageIn 0.9s var(--ease-out) 0.25s both;
 }
 @keyframes stageIn {
   from { opacity: 0; transform: translateY(26px) scale(0.986); }
@@ -555,7 +555,7 @@
   clip-path: polygon(0 0, 0 0, 0 calc(100% - 44px), 0 100%, 0 100%);
 }
 .dark-in.in {
-  animation: dockIn 1.4s var(--ease-soft) both;
+  animation: dockIn 0.9s var(--ease-soft) both;
 }
 @keyframes dockIn {
   from { opacity: 0; clip-path: polygon(0 0, 0 0, 0 calc(100% - 44px), 0 100%, 0 100%); }
@@ -867,7 +867,7 @@
   opacity: 0;
 }
 .is-ready .hero__dots {
-  animation: blurIn 1.4s var(--ease-out) 2.4s both;
+  animation: blurIn 0.9s var(--ease-out) 1.2s both;
 }
 .hero__dots button {
   display: inline-flex;
