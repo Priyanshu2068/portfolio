@@ -20,13 +20,23 @@ export default function Contact() {
     if (status.state === 'sending') return
     setStatus({ state: 'sending', msg: '' })
     try {
-      const res = await fetch(`${API}/api/contact`, {
+      const accessKey = import.meta.env.VITE_WEB3FORMS_KEY || '4ba96076-6d0b-4af3-9a6f-79f0889a3b2b'
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: accessKey,
+          name: form.name,
+          email: form.email,
+          subject: form.subject ? `[Portfolio] ${form.subject}` : `[Portfolio] Message from ${form.name}`,
+          message: form.message,
+          from_name: form.name,
+          replyto: form.email,
+          botcheck: form.company,
+        }),
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok || !data.ok) throw new Error(data.error || 'Something went wrong.')
+      if (!res.ok || !data.success) throw new Error(data.message || 'Something went wrong.')
       await dust(btn.current, () => setStatus({ state: 'sent', msg: 'Message sent — I’ll get back to you soon!' }))
       setForm(EMPTY)
     } catch (err) {
