@@ -2,7 +2,7 @@
 // itself when the hero scrolls out of view or the tab is hidden.
 export class Timeline {
   constructor() {
-    this.paused = true
+    this.paused = false
     this.dead = false
     this.timers = new Set()
     this.anims = new Set()

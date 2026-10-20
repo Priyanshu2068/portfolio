@@ -6,17 +6,10 @@ export const EASE_SOFT = 'cubic-bezier(0.22,1,0.36,1)'
 export const EASE_IN_FLIP = 'cubic-bezier(.55,0,1,.45)'
 export const EASE_OUT_FLIP = 'cubic-bezier(0,.55,.45,1)'
 
-export const prefersReduced = () =>
-  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+export const prefersReduced = () => false
 
 export function useReducedMotion() {
-  const [r, setR] = useState(prefersReduced)
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const f = () => setR(mq.matches)
-    mq.addEventListener('change', f)
-    return () => mq.removeEventListener('change', f)
-  }, [])
+  const [r, setR] = useState(false)
   return r
 }
 

@@ -495,9 +495,17 @@ export default function Hero() {
     }
   }, [reduced])
 
+  const [inHeroZone, setInHeroZone] = useState(true)
   useEffect(() => {
-    api.current?.setRunning(visible && pageVisible)
-  }, [visible, pageVisible, reduced])
+    const check = () => setInHeroZone(scrollY < 1400)
+    check()
+    addEventListener('scroll', check, { passive: true })
+    return () => removeEventListener('scroll', check)
+  }, [])
+
+  useEffect(() => {
+    api.current?.setRunning((visible || inHeroZone) && pageVisible)
+  }, [visible, inHeroZone, pageVisible, reduced])
 
   return (
     <div className="hero-pin" ref={pin}>
