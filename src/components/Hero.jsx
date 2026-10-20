@@ -286,8 +286,15 @@ function createStoryboard({ root, stage, reduced, onPhase }) {
     }
     step()
   }
-  // no auto-advance: the page scroll decides which act is on screen
-  const scheduleAuto = () => clearAuto()
+  // auto-advance smoothly cycles through the 3 cards (About -> Projects -> Resume)
+  const scheduleAuto = () => {
+    clearAuto()
+    if (reduced) return
+    autoTimer = tl.after(4800, () => {
+      if (!ready || running) return
+      setWant((done + 1) % 3)
+    })
+  }
   const setWant = (s) => {
     const t = clamp(s, 0, 2)
     if (t === want) return

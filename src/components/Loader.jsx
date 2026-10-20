@@ -31,6 +31,7 @@ export default function Loader() {
 
   useEffect(() => {
     if (state === 'gone') {
+      document.documentElement.classList.remove('is-loading')
       if (!onceFired('loader:done')) emitOnce('loader:done')
       return
     }
@@ -105,12 +106,18 @@ export default function Loader() {
       setPct(Math.round(smooth(t) * 100))
       if (t < 1) raf = requestAnimationFrame(frame)
       else {
+        clearTimeout(safety)
         setState('exit')
         emitOnce('loader:done')
       }
     }
+    const safety = setTimeout(() => {
+      setState('exit')
+      emitOnce('loader:done')
+    }, 2400)
     raf = requestAnimationFrame(frame)
     return () => {
+      clearTimeout(safety)
       cancelAnimationFrame(raf)
       removeEventListener('resize', resize)
     }
