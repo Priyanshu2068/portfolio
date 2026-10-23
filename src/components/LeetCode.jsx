@@ -20,18 +20,60 @@ const dateLabel = (ts) =>
 // heatmap buckets → sequential blue steps (validated ramp, see leetcode.css)
 const level = (n) => (n <= 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4)
 
+function normalizeFallback(p, base) {
+  if (!p || typeof p.totalSolved !== 'number') return null
+  const calendar =
+    typeof p.submissionCalendar === 'string'
+      ? JSON.parse(p.submissionCalendar || '{}')
+      : p.submissionCalendar || base.calendar
+  return {
+    ...base,
+    fetchedAt: new Date().toISOString(),
+    ranking: p.ranking ?? base.ranking,
+    solved: {
+      all: p.totalSolved ?? base.solved.all,
+      easy: p.easySolved ?? base.solved.easy,
+      medium: p.mediumSolved ?? base.solved.medium,
+      hard: p.hardSolved ?? base.solved.hard,
+    },
+    total: {
+      all: p.totalQuestions ?? base.total.all,
+      easy: p.totalEasy ?? base.total.easy,
+      medium: p.totalMedium ?? base.total.medium,
+      hard: p.totalHard ?? base.total.hard,
+    },
+    calendar,
+  }
+}
+
 function useLeetCode() {
   const [data, setData] = useState(snapshot)
   useEffect(() => {
     const ctrl = new AbortController()
     fetch(`${API}/api/leetcode`, { signal: ctrl.signal })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => d?.solved && setData(d))
-      .catch(() => {}) // keep the snapshot
+      .then((r) => {
+        if (!r.ok) throw new Error('API route unavailable')
+        return r.json()
+      })
+      .then((d) => {
+        if (d?.solved) setData(d)
+        else throw new Error('Invalid API response')
+      })
+      .catch(() => {
+        // Direct browser fallback if /api/leetcode is blocked or unavailable
+        return fetch('https://alfa-leetcode-api.onrender.com/userProfile/priyanshu2068', { signal: ctrl.signal })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((fallback) => {
+            const normalized = normalizeFallback(fallback, snapshot)
+            if (normalized?.solved) setData(normalized)
+          })
+          .catch(() => {}) // gracefully keep bundled snapshot
+      })
     return () => ctrl.abort()
   }, [])
   return data
 }
+
 
 function CountUp({ to, start }) {
   const [n, setN] = useState(0)

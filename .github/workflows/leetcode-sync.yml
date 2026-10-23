@@ -1,0 +1,44 @@
+name: LeetCode Stats Sync
+
+on:
+  schedule:
+    # Runs every 5 hours (00:00, 05:00, 10:00, 15:00, 20:00 UTC)
+    - cron: '0 */5 * * *'
+  workflow_dispatch: # Allows manual 1-click execution from GitHub Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  sync-leetcode:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch latest LeetCode stats
+        run: npm run leetcode
+
+      - name: Commit & push if stats changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          if ! git diff --quiet src/leetcode-snapshot.json; then
+            echo "New questions detected in leetcode-snapshot.json. Committing and pushing..."
+            git add src/leetcode-snapshot.json
+            git commit -m "chore: update leetcode stats [skip ci]"
+            git push origin main
+          else
+            echo "No new LeetCode stats since last check. Skipping commit."
+          fi
