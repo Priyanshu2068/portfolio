@@ -2,6 +2,7 @@
 /* Blue ramp from the dataviz reference palette — validated:
    difficulty (ordinal): 250 / 450 / 650; heatmap (sequential): 250 / 400 / 550 / 700 */
 .lc {
+  scroll-margin-top: 100px;
   --lc-easy: #86b6ef;
   --lc-medium: #2a78d6;
   --lc-hard: #104281;
