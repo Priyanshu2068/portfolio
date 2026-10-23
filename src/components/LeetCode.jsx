@@ -87,40 +87,61 @@ function useGitHub() {
   const [data, setData] = useState(ghSnapshot)
   useEffect(() => {
     const ctrl = new AbortController()
-    fetch('https://github-contributions-api.jogruber.de/v4/Priyanshu2068?y=last', {
-      signal: ctrl.signal,
-    })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((cData) => {
-        if (!cData?.contributions) return
-        const days = cData.contributions || []
-        let activeDays = 0,
-          maxDay = 0,
-          longestStreak = 0,
-          tempStreak = 0
-        const calendarMap = {}
-        for (const d of days) {
-          calendarMap[d.date] = { count: d.count, level: d.level }
-          if (d.count > 0) {
-            activeDays++
-            tempStreak++
-            if (tempStreak > longestStreak) longestStreak = tempStreak
-            if (d.count > maxDay) maxDay = d.count
-          } else {
-            tempStreak = 0
-          }
-        }
-        setData((prev) => ({
-          ...prev,
-          fetchedAt: new Date().toISOString(),
-          totalContributions: cData.total?.lastYear ?? prev.totalContributions,
-          activeDays: activeDays || prev.activeDays,
-          maxDay: maxDay || prev.maxDay,
-          longestStreak: longestStreak || prev.longestStreak,
-          calendar: calendarMap,
-        }))
+
+    // 1. Dedicated /api/github endpoint with edge caching
+    fetch(`${API}/api/github`, { signal: ctrl.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error('API route unavailable')
+        return r.json()
       })
-      .catch(() => {})
+      .then((d) => {
+        if (d?.totalContributions !== undefined) setData(d)
+        else throw new Error('Invalid payload')
+      })
+      .catch(() => {
+        // 2. Direct browser fallback: fetch live contributions & public profile concurrently
+        return Promise.all([
+          fetch('https://github-contributions-api.jogruber.de/v4/Priyanshu2068?y=last', {
+            signal: ctrl.signal,
+          }).then((r) => (r.ok ? r.json() : null)),
+          fetch('https://api.github.com/users/Priyanshu2068', {
+            signal: ctrl.signal,
+          }).then((r) => (r.ok ? r.json() : null)),
+        ])
+          .then(([cData, uData]) => {
+            if (!cData?.contributions && !uData?.public_repos) return
+            const days = cData?.contributions || []
+            let activeDays = 0,
+              maxDay = 0,
+              longestStreak = 0,
+              tempStreak = 0
+            const calendarMap = {}
+            for (const d of days) {
+              calendarMap[d.date] = { count: d.count, level: d.level }
+              if (d.count > 0) {
+                activeDays++
+                tempStreak++
+                if (tempStreak > longestStreak) longestStreak = tempStreak
+                if (d.count > maxDay) maxDay = d.count
+              } else {
+                tempStreak = 0
+              }
+            }
+            setData((prev) => ({
+              ...prev,
+              fetchedAt: new Date().toISOString(),
+              totalContributions: cData?.total?.lastYear ?? prev.totalContributions,
+              publicRepos: uData?.public_repos ?? prev.publicRepos,
+              followers: uData?.followers ?? prev.followers,
+              activeDays: activeDays || prev.activeDays,
+              maxDay: maxDay || prev.maxDay,
+              longestStreak: longestStreak || prev.longestStreak,
+              calendar: Object.keys(calendarMap).length ? calendarMap : prev.calendar,
+            }))
+          })
+          .catch(() => {})
+      })
+
     return () => ctrl.abort()
   }, [])
   return data
@@ -562,7 +583,8 @@ export default function LeetCode() {
         )}
 
         <p className="lc__note">
-          Live from {isLc ? 'LeetCode' : 'GitHub'} · updated{' '}
+          <span className="dot-live" style={{ marginRight: '6px' }} />
+          Live synced from {isLc ? 'LeetCode' : 'GitHub'} · updated{' '}
           {new Date(activeFetchedAt).toLocaleDateString('en-GB', {
             day: 'numeric',
             month: 'short',

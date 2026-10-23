@@ -6,6 +6,7 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { fetchLeetCode } from './leetcode.js'
+import { fetchGitHub } from './github.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -68,6 +69,21 @@ app.get('/api/leetcode', async (_req, res) => {
     console.warn('[leetcode]', err.message)
     if (leetcodeCache.data) return res.json(leetcodeCache.data) // stale beats nothing
     res.status(502).json({ ok: false, error: 'LeetCode is unavailable right now.' })
+  }
+})
+
+// ---------- GitHub stats (cached for 30 minutes) ----------
+const GITHUB_USER = process.env.GITHUB_USER || 'Priyanshu2068'
+let githubCache = { at: 0, data: null }
+app.get('/api/github', async (_req, res) => {
+  if (githubCache.data && Date.now() - githubCache.at < 30 * 60 * 1000) return res.json(githubCache.data)
+  try {
+    githubCache = { at: Date.now(), data: await fetchGitHub(GITHUB_USER) }
+    res.json(githubCache.data)
+  } catch (err) {
+    console.warn('[github]', err.message)
+    if (githubCache.data) return res.json(githubCache.data)
+    res.status(502).json({ ok: false, error: 'GitHub is unavailable right now.' })
   }
 })
 
