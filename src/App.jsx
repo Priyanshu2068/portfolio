@@ -12,6 +12,7 @@ import Contact from './components/Contact'
 import Faq from './components/Faq'
 import Footer from './components/Footer'
 import StickyCta from './components/StickyCta'
+import Chatbot from './components/Chatbot'
 
 export default function App() {
   return (
@@ -34,6 +35,8 @@ export default function App() {
       </main>
       <Footer />
       <StickyCta />
+      <Chatbot />
     </>
   )
 }
+
