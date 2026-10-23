@@ -324,6 +324,16 @@
 .lc .l3 { background: var(--lc-h3); }
 .lc .l4 { background: var(--lc-h4); }
 
+/* GitHub Emerald Green Ramp Overrides */
+.lc .lc--github .l1,
+.lc-heat.lc--github .l1 { background: #9be9a8 !important; }
+.lc .lc--github .l2,
+.lc-heat.lc--github .l2 { background: #40c463 !important; }
+.lc .lc--github .l3,
+.lc-heat.lc--github .l3 { background: #30a14e !important; }
+.lc .lc--github .l4,
+.lc-heat.lc--github .l4 { background: #216e39 !important; }
+
 .lc__note {
   margin: 16px 0 0;
   font-size: 13px;
