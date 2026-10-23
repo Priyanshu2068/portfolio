@@ -35,7 +35,6 @@
 }
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 100px;
   -webkit-text-size-adjust: 100%;
 }
 html.is-loading,
@@ -94,7 +93,6 @@ main {
 .section {
   padding: clamp(80px, 12vw, 150px) 0;
   position: relative;
-  scroll-margin-top: 90px;
 }
 .center {
   text-align: center;
@@ -434,15 +432,6 @@ main {
   z-index: 50;
   padding: 14px var(--gutter);
   opacity: 0;
-  transition: background 0.3s var(--ease-soft), backdrop-filter 0.3s var(--ease-soft);
-}
-.nav.is-scrolled {
-  padding: 10px var(--gutter);
-  background: rgba(239, 239, 239, 0.96);
-  backdrop-filter: blur(24px) saturate(1.2);
-  -webkit-backdrop-filter: blur(24px) saturate(1.2);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.07);
 }
 .nav.is-in {
   animation: navIn 0.9s var(--ease-soft) 0.2s both;
@@ -466,9 +455,11 @@ main {
 }
 .nav.is-scrolled .nav__bar,
 .nav.is-open .nav__bar {
-  background: #ffffff;
-  border-color: rgba(215, 220, 230, 0.95);
-  box-shadow: 0 4px 16px -4px rgba(16, 16, 19, 0.08);
+  background: rgba(255, 255, 255, 0.62);
+  border-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(30px) saturate(1.05);
+  -webkit-backdrop-filter: blur(30px) saturate(1.05);
+  box-shadow: 0 10px 30px -18px rgba(16, 16, 19, 0.35);
 }
 .nav__logo {
   font-family: var(--f-display);
@@ -477,10 +468,6 @@ main {
   letter-spacing: -0.02em;
   display: inline-flex;
   align-items: baseline;
-  white-space: nowrap;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 2;
 }
 .nav__logo-mark {
   color: var(--blue);
