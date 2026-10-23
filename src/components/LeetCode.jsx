@@ -216,7 +216,8 @@ export default function LeetCode() {
   // Build 53-week submission calendar for LeetCode
   const lcHeatmap = useMemo(() => {
     const now = new Date()
-    const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000
+    // Use user's local date so today is never cut off due to UTC offset
+    const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 1000
     const start = today - (WEEKS - 1) * 7 * DAY - new Date(today * 1000).getUTCDay() * DAY
     const weeks = []
     const months = []
@@ -249,7 +250,8 @@ export default function LeetCode() {
   // Build 53-week contribution calendar for GitHub
   const ghHeatmap = useMemo(() => {
     const now = new Date()
-    const today = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) / 1000
+    // Use user's local date so today (e.g. Oct 24) is always rendered and current
+    const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 1000
     const start = today - (WEEKS - 1) * 7 * DAY - new Date(today * 1000).getUTCDay() * DAY
     const weeks = []
     const months = []

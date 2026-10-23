@@ -104,6 +104,57 @@ export async function fetchGitHub(username = 'Priyanshu2068') {
     }
   }
 
+  // 3. Real-time recent commits: GitHub's static contributions table can lag hours/days behind git push.
+  // We inspect recent commits from active repos and merge them immediately into today's and yesterday's calendar.
+  if (Array.isArray(repos) && repos.length > 0) {
+    try {
+      const activeRepos = repos.slice(0, 4).filter((r) => r.pushed_at)
+      const commitPromises = activeRepos.map((r) =>
+        fetch(`https://api.github.com/repos/${r.full_name}/commits?per_page=30&author=${username}`, {
+          headers: { 'User-Agent': 'portfolio-app' },
+        })
+          .then((res) => (res.ok ? res.json() : []))
+          .catch(() => []),
+      )
+      const commitLists = await Promise.all(commitPromises)
+      const recentCounts = {}
+      for (const list of commitLists) {
+        if (!Array.isArray(list)) continue
+        for (const item of list) {
+          const rawDate = item.commit?.author?.date
+          if (!rawDate) continue
+          const dObj = new Date(rawDate)
+          const utcDate = rawDate.slice(0, 10)
+          const localDate = new Intl.DateTimeFormat('en-CA', {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          }).format(dObj)
+
+          recentCounts[localDate] = (recentCounts[localDate] || 0) + 1
+          if (localDate !== utcDate) {
+            recentCounts[utcDate] = (recentCounts[utcDate] || 0) + 1
+          }
+        }
+      }
+
+      for (const [dt, cnt] of Object.entries(recentCounts)) {
+        const existing = calendarMap[dt]?.count || 0
+        if (cnt > existing) {
+          const diff = cnt - existing
+          totalContributions += diff
+          const lvl = cnt <= 0 ? 0 : cnt <= 2 ? 1 : cnt <= 5 ? 2 : cnt <= 8 ? 3 : 4
+          calendarMap[dt] = { count: cnt, level: lvl }
+          if (existing === 0) activeDays++
+          if (cnt > maxDay) maxDay = cnt
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   const langs = {}
   let totalStars = 0
   let totalForks = 0
