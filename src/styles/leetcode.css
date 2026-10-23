@@ -17,10 +17,96 @@
   align-items: flex-end;
   gap: 24px;
   flex-wrap: wrap;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 .lc__head .lead {
   margin-bottom: 0;
+}
+
+/* ═════════════ Activity Switch & Tabs ═════════════ */
+.activity-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.activity-tabs {
+  display: inline-flex;
+  background: #e6e8ee;
+  border-radius: 999px;
+  padding: 4px;
+  gap: 2px;
+  border: 1px solid var(--line-2);
+}
+.activity-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--f-body);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-soft);
+}
+.activity-tab:hover {
+  color: var(--ink);
+}
+.activity-tab.is-active {
+  background: var(--card);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.activity-tab .icon {
+  transition: transform 0.2s var(--ease-soft);
+}
+.activity-tab.is-active .icon {
+  transform: scale(1.08);
+}
+.activity-tab.is-active.is-leetcode .icon {
+  color: #ffa116;
+}
+.activity-tab.is-active.is-github .icon {
+  color: #2da44e;
+}
+
+/* GitHub Heatmap & Bar Themes */
+.lc--github {
+  --gh-h0: #eceef3;
+  --gh-h1: #9be9a8;
+  --gh-h2: #40c463;
+  --gh-h3: #30a14e;
+  --gh-h4: #216e39;
+}
+.lc--github .l1 { background: var(--gh-h1); }
+.lc--github .l2 { background: var(--gh-h2); }
+.lc--github .l3 { background: var(--gh-h3); }
+.lc--github .l4 { background: var(--gh-h4); }
+
+.lc-bar--js i { background: #eab308; }
+.lc-bar--html i { background: #f97316; }
+.lc-bar--css i { background: #8b5cf6; }
+.lc-bar--docker i { background: #0284c7; }
+.lc-bar--cpp i { background: #00599c; }
+.lc-bar--other i { background: #64748b; }
+
+.lc-tab-content {
+  animation: lcFadeIn 0.3s var(--ease-soft);
+}
+@keyframes lcFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .lc__grid {
   display: grid;

@@ -10,7 +10,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server/index.js",
-    "leetcode": "node scripts/leetcode-snapshot.mjs"
+    "leetcode": "node scripts/leetcode-snapshot.mjs",
+    "github": "node scripts/github-snapshot.mjs",
+    "stats": "node scripts/leetcode-snapshot.mjs && node scripts/github-snapshot.mjs"
   },
   "dependencies": {
     "@fontsource/inter-tight": "^5.3.0",
