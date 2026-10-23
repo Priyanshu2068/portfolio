@@ -12,10 +12,12 @@ export default async function handler(req, res) {
     return res.status(200).end()
   }
 
-  // Cache at CDN edge for 30 minutes, stale-while-revalidate for 1 hour
-  res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=3600')
+  // Cache at CDN edge for 60 seconds, stale-while-revalidate for 2 minutes
+  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120')
 
-  if (githubCache.data && Date.now() - githubCache.at < 30 * 60 * 1000) {
+  const forceRefresh = req.query?.refresh === '1' || req.query?.refresh === 'true'
+
+  if (!forceRefresh && githubCache.data && Date.now() - githubCache.at < 60 * 1000) {
     return res.status(200).json(githubCache.data)
   }
 

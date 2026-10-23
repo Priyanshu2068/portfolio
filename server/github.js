@@ -1,9 +1,11 @@
-// Fetches GitHub stats & contributions.
+// Fetches live GitHub stats & contributions directly from GitHub in real time.
 // Shared by the API route (/api/github), server/index.js, and the snapshot script.
 
 export async function fetchGitHub(username = 'Priyanshu2068') {
-  const [cRes, uRes, rRes] = await Promise.all([
-    fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`).catch(() => null),
+  const [ghHtmlRes, uRes, rRes] = await Promise.all([
+    fetch(`https://github.com/users/${username}/contributions`, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+    }).catch(() => null),
     fetch(`https://api.github.com/users/${username}`, {
       headers: { 'User-Agent': 'portfolio-app' },
     }).catch(() => null),
@@ -12,51 +14,94 @@ export async function fetchGitHub(username = 'Priyanshu2068') {
     }).catch(() => null),
   ])
 
-  let cData = cRes && cRes.ok ? await cRes.json() : null
   const uData = uRes && uRes.ok ? await uRes.json() : {}
   const repos = rRes && rRes.ok ? await rRes.json() : []
 
-  // If jogruber API failed or was incomplete, scrape the exact live count from GitHub
-  if (!cData || !cData.contributions) {
+  let totalContributions = 0
+  const calendarMap = {}
+  let activeDays = 0
+  let maxDay = 0
+  let longestStreak = 0
+  let tempStreak = 0
+  let currentStreak = 0
+
+  // 1. Direct Live Scrape from GitHub
+  if (ghHtmlRes && ghHtmlRes.ok) {
     try {
-      const ghHtmlRes = await fetch(`https://github.com/users/${username}/contributions`, {
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-      })
-      if (ghHtmlRes.ok) {
-        const html = await ghHtmlRes.text()
-        const match = html.match(/([0-9,]+)\s+contributions\s+in\s+the\s+last\s+year/i)
-        const total = match ? parseInt(match[1].replace(/,/g, ''), 10) : 81
-        cData = { total: { lastYear: total }, contributions: [] }
+      const html = await ghHtmlRes.text()
+      const totalMatch = html.match(/([0-9,]+)\s+contributions\s+in\s+the\s+last\s+year/i)
+      if (totalMatch) {
+        totalContributions = parseInt(totalMatch[1].replace(/,/g, ''), 10)
+      }
+
+      // Parse tooltips for exact counts
+      const tipRegex = /<tool-tip[^>]+for="([^"]+)"[^>]*>([\s\S]*?)<\/tool-tip>/g
+      const tipCounts = {}
+      let tm
+      while ((tm = tipRegex.exec(html)) !== null) {
+        const forId = tm[1]
+        const countMatch = tm[2].match(/([0-9]+)\s+contribution/i)
+        tipCounts[forId] = countMatch ? parseInt(countMatch[1], 10) : 0
+      }
+
+      // Parse days
+      const dayRegex = /<td[^>]+data-date="([0-9-]+)"[^>]*>([\s\S]*?)<\/td>/g
+      let dm
+      const dayList = []
+      while ((dm = dayRegex.exec(html)) !== null) {
+        const date = dm[1]
+        const inner = dm[0]
+        const levelMatch = inner.match(/data-level="([0-4])"/)
+        const level = levelMatch ? parseInt(levelMatch[1], 10) : 0
+        const idMatch = inner.match(/id="([^"]+)"/)
+        const count = idMatch && tipCounts[idMatch[1]] !== undefined ? tipCounts[idMatch[1]] : level > 0 ? 1 : 0
+
+        calendarMap[date] = { count, level }
+        dayList.push({ date, count, level })
+
+        if (count > 0) {
+          activeDays++
+          tempStreak++
+          if (tempStreak > longestStreak) longestStreak = tempStreak
+          if (count > maxDay) maxDay = count
+        } else {
+          tempStreak = 0
+        }
+      }
+
+      for (let i = dayList.length - 1; i >= 0; i--) {
+        if (dayList[i].count > 0) currentStreak++
+        else if (i === dayList.length - 1) continue
+        else break
       }
     } catch {
       // ignore
     }
   }
 
-  const days = cData?.contributions || []
-  let activeDays = 0
-  let maxDay = 0
-  let longestStreak = 0
-  let tempStreak = 0
-
-  const calendarMap = {}
-  for (const d of days) {
-    calendarMap[d.date] = { count: d.count, level: d.level }
-    if (d.count > 0) {
-      activeDays++
-      tempStreak++
-      if (tempStreak > longestStreak) longestStreak = tempStreak
-      if (d.count > maxDay) maxDay = d.count
-    } else {
-      tempStreak = 0
+  // 2. Fallback to jogruber API if direct scrape didn't get calendar
+  if (Object.keys(calendarMap).length === 0) {
+    try {
+      const cRes = await fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`)
+      if (cRes.ok) {
+        const cData = await cRes.json()
+        totalContributions = cData.total?.lastYear ?? totalContributions
+        const days = cData.contributions || []
+        for (const d of days) {
+          calendarMap[d.date] = { count: d.count, level: d.level }
+          if (d.count > 0) {
+            activeDays++
+            tempStreak++
+            if (tempStreak > longestStreak) longestStreak = tempStreak
+            if (d.count > maxDay) maxDay = d.count
+          } else {
+            tempStreak = 0
+          }
+        }
+      }
+    } catch {
+      // ignore
     }
-  }
-
-  let currentStreak = 0
-  for (let i = days.length - 1; i >= 0; i--) {
-    if (days[i].count > 0) currentStreak++
-    else if (i === days.length - 1) continue
-    else break
   }
 
   const langs = {}
@@ -75,13 +120,13 @@ export async function fetchGitHub(username = 'Priyanshu2068') {
   return {
     username,
     fetchedAt: new Date().toISOString(),
-    totalContributions: cData?.total?.lastYear ?? 81,
+    totalContributions: totalContributions || 81,
     publicRepos: uData?.public_repos ?? (Array.isArray(repos) ? repos.length : 10),
     followers: uData?.followers ?? 2,
     following: uData?.following ?? 2,
     activeDays: activeDays || 24,
     longestStreak: longestStreak || 3,
-    currentStreak,
+    currentStreak: currentStreak || 0,
     maxDay: maxDay || 9,
     stars: totalStars,
     forks: totalForks,

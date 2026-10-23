@@ -204,14 +204,39 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
+.lc-tile {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
 .lc-tile__value {
   margin: 4px 0 0;
   font-family: var(--f-display);
   font-weight: 600;
-  font-size: clamp(26px, 2.6vw, 34px);
-  line-height: 1.1;
+  font-size: clamp(24px, 2.4vw, 32px);
+  line-height: 1.15;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.lc-tile__value--handle {
+  font-size: clamp(14px, 1.35vw, 17px) !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--blue) !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: block;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+a.lc-tile__value--handle:hover {
+  text-decoration: underline;
+  opacity: 0.85;
 }
 .lc-tile__note {
   margin: 4px 0 0;

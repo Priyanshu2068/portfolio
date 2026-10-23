@@ -58,27 +58,35 @@ function useLeetCode() {
   const [data, setData] = useState(lcSnapshot)
   useEffect(() => {
     const ctrl = new AbortController()
-    fetch(`${API}/api/leetcode`, { signal: ctrl.signal })
-      .then((r) => {
-        if (!r.ok) throw new Error('API route unavailable')
-        return r.json()
-      })
-      .then((d) => {
-        if (d?.solved) setData(d)
-        else throw new Error('Invalid API response')
-      })
-      .catch(() => {
-        return fetch('https://alfa-leetcode-api.onrender.com/userProfile/priyanshu2068', {
-          signal: ctrl.signal,
+    const sync = () => {
+      fetch(`${API}/api/leetcode?t=${Date.now()}`, { signal: ctrl.signal })
+        .then((r) => {
+          if (!r.ok) throw new Error('API route unavailable')
+          return r.json()
         })
-          .then((r) => (r.ok ? r.json() : null))
-          .then((fallback) => {
-            const normalized = normalizeLcFallback(fallback, lcSnapshot)
-            if (normalized?.solved) setData(normalized)
+        .then((d) => {
+          if (d?.solved) setData(d)
+          else throw new Error('Invalid API response')
+        })
+        .catch(() => {
+          return fetch('https://alfa-leetcode-api.onrender.com/userProfile/priyanshu2068', {
+            signal: ctrl.signal,
           })
-          .catch(() => {})
-      })
-    return () => ctrl.abort()
+            .then((r) => (r.ok ? r.json() : null))
+            .then((fallback) => {
+              const normalized = normalizeLcFallback(fallback, lcSnapshot)
+              if (normalized?.solved) setData(normalized)
+            })
+            .catch(() => {})
+        })
+    }
+
+    sync()
+    window.addEventListener('focus', sync)
+    return () => {
+      ctrl.abort()
+      window.removeEventListener('focus', sync)
+    }
   }, [])
   return data
 }
@@ -88,61 +96,68 @@ function useGitHub() {
   useEffect(() => {
     const ctrl = new AbortController()
 
-    // 1. Dedicated /api/github endpoint with edge caching
-    fetch(`${API}/api/github`, { signal: ctrl.signal })
-      .then((r) => {
-        if (!r.ok) throw new Error('API route unavailable')
-        return r.json()
-      })
-      .then((d) => {
-        if (d?.totalContributions !== undefined) setData(d)
-        else throw new Error('Invalid payload')
-      })
-      .catch(() => {
-        // 2. Direct browser fallback: fetch live contributions & public profile concurrently
-        return Promise.all([
-          fetch('https://github-contributions-api.jogruber.de/v4/Priyanshu2068?y=last', {
-            signal: ctrl.signal,
-          }).then((r) => (r.ok ? r.json() : null)),
-          fetch('https://api.github.com/users/Priyanshu2068', {
-            signal: ctrl.signal,
-          }).then((r) => (r.ok ? r.json() : null)),
-        ])
-          .then(([cData, uData]) => {
-            if (!cData?.contributions && !uData?.public_repos) return
-            const days = cData?.contributions || []
-            let activeDays = 0,
-              maxDay = 0,
-              longestStreak = 0,
-              tempStreak = 0
-            const calendarMap = {}
-            for (const d of days) {
-              calendarMap[d.date] = { count: d.count, level: d.level }
-              if (d.count > 0) {
-                activeDays++
-                tempStreak++
-                if (tempStreak > longestStreak) longestStreak = tempStreak
-                if (d.count > maxDay) maxDay = d.count
-              } else {
+    const sync = () => {
+      // 1. Dedicated /api/github endpoint with edge caching
+      fetch(`${API}/api/github?t=${Date.now()}`, { signal: ctrl.signal })
+        .then((r) => {
+          if (!r.ok) throw new Error('API route unavailable')
+          return r.json()
+        })
+        .then((d) => {
+          if (d?.totalContributions !== undefined) setData(d)
+          else throw new Error('Invalid payload')
+        })
+        .catch(() => {
+          // 2. Direct browser fallback: fetch live contributions & public profile concurrently
+          return Promise.all([
+            fetch('https://github-contributions-api.jogruber.de/v4/Priyanshu2068?y=last', {
+              signal: ctrl.signal,
+            }).then((r) => (r.ok ? r.json() : null)),
+            fetch('https://api.github.com/users/Priyanshu2068', {
+              signal: ctrl.signal,
+            }).then((r) => (r.ok ? r.json() : null)),
+          ])
+            .then(([cData, uData]) => {
+              if (!cData?.contributions && !uData?.public_repos) return
+              const days = cData?.contributions || []
+              let activeDays = 0,
+                maxDay = 0,
+                longestStreak = 0,
                 tempStreak = 0
+              const calendarMap = {}
+              for (const d of days) {
+                calendarMap[d.date] = { count: d.count, level: d.level }
+                if (d.count > 0) {
+                  activeDays++
+                  tempStreak++
+                  if (tempStreak > longestStreak) longestStreak = tempStreak
+                  if (d.count > maxDay) maxDay = d.count
+                } else {
+                  tempStreak = 0
+                }
               }
-            }
-            setData((prev) => ({
-              ...prev,
-              fetchedAt: new Date().toISOString(),
-              totalContributions: cData?.total?.lastYear ?? prev.totalContributions,
-              publicRepos: uData?.public_repos ?? prev.publicRepos,
-              followers: uData?.followers ?? prev.followers,
-              activeDays: activeDays || prev.activeDays,
-              maxDay: maxDay || prev.maxDay,
-              longestStreak: longestStreak || prev.longestStreak,
-              calendar: Object.keys(calendarMap).length ? calendarMap : prev.calendar,
-            }))
-          })
-          .catch(() => {})
-      })
+              setData((prev) => ({
+                ...prev,
+                fetchedAt: new Date().toISOString(),
+                totalContributions: cData?.total?.lastYear ?? prev.totalContributions,
+                publicRepos: uData?.public_repos ?? prev.publicRepos,
+                followers: uData?.followers ?? prev.followers,
+                activeDays: activeDays || prev.activeDays,
+                maxDay: maxDay || prev.maxDay,
+                longestStreak: longestStreak || prev.longestStreak,
+                calendar: Object.keys(calendarMap).length ? calendarMap : prev.calendar,
+              }))
+            })
+            .catch(() => {})
+        })
+    }
 
-    return () => ctrl.abort()
+    sync()
+    window.addEventListener('focus', sync)
+    return () => {
+      ctrl.abort()
+      window.removeEventListener('focus', sync)
+    }
   }, [])
   return data
 }
@@ -314,6 +329,8 @@ export default function LeetCode() {
       label: 'GitHub profile',
       value: `@${ghData.username || 'Priyanshu2068'}`,
       note: `${ghData.followers || 2} followers on GitHub`,
+      isHandle: true,
+      href: ghUrl,
     },
   ]
 
@@ -425,7 +442,24 @@ export default function LeetCode() {
                 {lcTiles.map((t, i) => (
                   <Reveal className="lc-card lc-tile" key={t.label} delay={0.16 + i * 0.06}>
                     <p className="lc-card__label">{t.label}</p>
-                    <p className="lc-tile__value">{t.value}</p>
+                    {t.href ? (
+                      <a
+                        href={t.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className={`lc-tile__value ${t.isHandle ? 'lc-tile__value--handle' : ''}`}
+                        title={t.isHandle ? t.value : undefined}
+                      >
+                        {t.value}
+                      </a>
+                    ) : (
+                      <p
+                        className={`lc-tile__value ${t.isHandle ? 'lc-tile__value--handle' : ''}`}
+                        title={t.isHandle ? t.value : undefined}
+                      >
+                        {t.value}
+                      </p>
+                    )}
                     {t.note && <p className="lc-tile__note">{t.note}</p>}
                   </Reveal>
                 ))}
@@ -494,7 +528,7 @@ export default function LeetCode() {
             <Reveal className="lc-card lc-solved" delay={0.1}>
               <p className="lc-card__label">GitHub Contributions</p>
               <p className="lc-solved__num">
-                <CountUp to={ghHeatmap.contributions || ghData.totalContributions} start={seen} />
+                <CountUp to={ghData.totalContributions || ghHeatmap.contributions} start={seen} />
               </p>
               <p className="lc-solved__of">contributions in the past year</p>
               <ul className="lc-bars" aria-label="Top repository languages on GitHub">
@@ -530,7 +564,24 @@ export default function LeetCode() {
                 {ghTiles.map((t, i) => (
                   <Reveal className="lc-card lc-tile" key={t.label} delay={0.16 + i * 0.06}>
                     <p className="lc-card__label">{t.label}</p>
-                    <p className="lc-tile__value">{t.value}</p>
+                    {t.href ? (
+                      <a
+                        href={t.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        className={`lc-tile__value ${t.isHandle ? 'lc-tile__value--handle' : ''}`}
+                        title={t.value}
+                      >
+                        {t.value}
+                      </a>
+                    ) : (
+                      <p
+                        className={`lc-tile__value ${t.isHandle ? 'lc-tile__value--handle' : ''}`}
+                        title={t.isHandle ? t.value : undefined}
+                      >
+                        {t.value}
+                      </p>
+                    )}
                     {t.note && <p className="lc-tile__note">{t.note}</p>}
                   </Reveal>
                 ))}

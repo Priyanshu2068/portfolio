@@ -72,11 +72,12 @@ app.get('/api/leetcode', async (_req, res) => {
   }
 })
 
-// ---------- GitHub stats (cached for 30 minutes) ----------
+// ---------- GitHub stats (cached for 60 seconds) ----------
 const GITHUB_USER = process.env.GITHUB_USER || 'Priyanshu2068'
 let githubCache = { at: 0, data: null }
-app.get('/api/github', async (_req, res) => {
-  if (githubCache.data && Date.now() - githubCache.at < 30 * 60 * 1000) return res.json(githubCache.data)
+app.get('/api/github', async (req, res) => {
+  const forceRefresh = req.query?.refresh === '1' || req.query?.refresh === 'true'
+  if (!forceRefresh && githubCache.data && Date.now() - githubCache.at < 60 * 1000) return res.json(githubCache.data)
   try {
     githubCache = { at: Date.now(), data: await fetchGitHub(GITHUB_USER) }
     res.json(githubCache.data)
