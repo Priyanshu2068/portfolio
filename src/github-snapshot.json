@@ -1,17 +1,34 @@
 {
   "username": "Priyanshu2068",
-  "fetchedAt": "2026-10-25T18:05:11.307Z",
-  "totalContributions": 91,
-  "publicRepos": 0,
+  "fetchedAt": "2026-10-25T22:16:21.261Z",
+  "totalContributions": 102,
+  "publicRepos": 11,
   "followers": 2,
   "following": 2,
-  "activeDays": 26,
+  "activeDays": 27,
   "longestStreak": 2,
   "currentStreak": 1,
   "maxDay": 9,
   "stars": 0,
   "forks": 0,
-  "languages": [],
+  "languages": [
+    {
+      "name": "JavaScript",
+      "count": 5
+    },
+    {
+      "name": "HTML",
+      "count": 3
+    },
+    {
+      "name": "Dockerfile",
+      "count": 1
+    },
+    {
+      "name": "CSS",
+      "count": 1
+    }
+  ],
   "calendar": {
     "2025-10-26": {
       "count": 0,
@@ -1262,8 +1279,8 @@
       "level": 0
     },
     "2026-10-23": {
-      "count": 0,
-      "level": 0
+      "count": 9,
+      "level": 4
     },
     "2025-11-01": {
       "count": 0,
@@ -1470,7 +1487,7 @@
       "level": 0
     },
     "2026-10-24": {
-      "count": 7,
+      "count": 9,
       "level": 4
     }
   }
