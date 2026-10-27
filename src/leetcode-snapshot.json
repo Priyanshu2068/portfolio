@@ -1,23 +1,23 @@
 {
   "username": "priyanshu2068",
-  "fetchedAt": "2026-10-27T10:11:08.659Z",
-  "ranking": 784482,
+  "fetchedAt": "2026-10-27T19:48:09.427Z",
+  "ranking": 780544,
   "solved": {
-    "all": 220,
-    "easy": 112,
+    "all": 221,
+    "easy": 113,
     "medium": 93,
     "hard": 15
   },
   "total": {
-    "all": 4095,
+    "all": 4096,
     "easy": 974,
-    "medium": 2135,
+    "medium": 2136,
     "hard": 986
   },
   "languages": [
     {
       "name": "C++",
-      "solved": 219
+      "solved": 220
     },
     {
       "name": "Java",
@@ -195,7 +195,8 @@
     "1792713600": 1,
     "1792800000": 1,
     "1792886400": 2,
-    "1792972800": 1
+    "1792972800": 1,
+    "1793059200": 1
   },
   "contest": null
 }
