@@ -1,11 +1,11 @@
 {
   "username": "priyanshu2068",
-  "fetchedAt": "2026-10-31T10:42:45.583Z",
-  "ranking": 768864,
+  "fetchedAt": "2026-10-31T19:03:56.384Z",
+  "ranking": 764914,
   "solved": {
-    "all": 224,
+    "all": 225,
     "easy": 113,
-    "medium": 95,
+    "medium": 96,
     "hard": 16
   },
   "total": {
@@ -17,7 +17,7 @@
   "languages": [
     {
       "name": "C++",
-      "solved": 223
+      "solved": 224
     },
     {
       "name": "Java",
@@ -30,7 +30,8 @@
   ],
   "badges": [
     "100 Days Badge 2026",
-    "50 Days Badge 2026"
+    "50 Days Badge 2026",
+    "Oct LeetCoding Challenge"
   ],
   "calendar": {
     "1762819200": 1,
@@ -199,7 +200,8 @@
     "1793059200": 1,
     "1793145600": 1,
     "1793232000": 1,
-    "1793318400": 1
+    "1793318400": 1,
+    "1793404800": 1
   },
   "contest": null
 }
