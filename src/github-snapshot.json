@@ -1,11 +1,11 @@
 {
   "username": "Priyanshu2068",
-  "fetchedAt": "2026-11-14T23:36:17.539Z",
+  "fetchedAt": "2026-11-15T04:39:28.069Z",
   "totalContributions": 110,
   "publicRepos": 13,
   "followers": 2,
   "following": 2,
-  "activeDays": 30,
+  "activeDays": 26,
   "longestStreak": 2,
   "currentStreak": 0,
   "maxDay": 9,
@@ -34,10 +34,6 @@
     }
   ],
   "calendar": {
-    "2025-11-09": {
-      "count": 1,
-      "level": 1
-    },
     "2025-11-16": {
       "count": 0,
       "level": 0
@@ -246,9 +242,9 @@
       "count": 0,
       "level": 0
     },
-    "2025-11-10": {
-      "count": 1,
-      "level": 1
+    "2026-11-15": {
+      "count": 0,
+      "level": 0
     },
     "2025-11-17": {
       "count": 0,
@@ -455,10 +451,6 @@
       "level": 2
     },
     "2026-11-09": {
-      "count": 0,
-      "level": 0
-    },
-    "2025-11-11": {
       "count": 0,
       "level": 0
     },
@@ -670,10 +662,6 @@
       "count": 0,
       "level": 0
     },
-    "2025-11-12": {
-      "count": 3,
-      "level": 2
-    },
     "2025-11-19": {
       "count": 0,
       "level": 0
@@ -881,10 +869,6 @@
     "2026-11-11": {
       "count": 0,
       "level": 0
-    },
-    "2025-11-13": {
-      "count": 6,
-      "level": 3
     },
     "2025-11-20": {
       "count": 0,
@@ -1094,10 +1078,6 @@
       "count": 4,
       "level": 2
     },
-    "2025-11-14": {
-      "count": 0,
-      "level": 0
-    },
     "2025-11-21": {
       "count": 0,
       "level": 0
@@ -1303,10 +1283,6 @@
       "level": 0
     },
     "2026-11-13": {
-      "count": 0,
-      "level": 0
-    },
-    "2025-11-15": {
       "count": 0,
       "level": 0
     },
