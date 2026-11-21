@@ -1,7 +1,7 @@
 {
   "username": "priyanshu2068",
-  "fetchedAt": "2026-11-21T05:28:57.844Z",
-  "ranking": 750693,
+  "fetchedAt": "2026-11-21T17:04:54.548Z",
+  "ranking": 750955,
   "solved": {
     "all": 229,
     "easy": 116,
@@ -9,10 +9,10 @@
     "hard": 16
   },
   "total": {
-    "all": 4115,
-    "easy": 976,
-    "medium": 2148,
-    "hard": 991
+    "all": 4119,
+    "easy": 977,
+    "medium": 2150,
+    "hard": 992
   },
   "languages": [
     {
